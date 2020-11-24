@@ -26,15 +26,20 @@ namespace ESKOBApi.Controllers
             {
                 idea.Submitted = DateTime.Now;
                 idea.Last_Edit = DateTime.Now;
+                idea.Status = "NEW";
                 _context.Ideas.Add(idea);
                 _context.SaveChanges();
+
+                return new HttpResponseMessage()
+                {
+                    ReasonPhrase = "" + idea.Id
+                };
             }
-            return new HttpResponseMessage();
         }
 
         [HttpGet]
-        [Route("{parameter}")]
-        public IEnumerable<Idea> Get(string parameter)
+        [Route("{parameter}/{search?}")]
+        public IEnumerable<Idea> Get(string parameter, string search)
         {
             DateTime now = DateTime.Now;
             using(var _context = new ESKOBDbContext())
@@ -89,6 +94,13 @@ namespace ESKOBApi.Controllers
                     case ("implemented"):
                         return _context.Ideas.Include(idea => idea.Hashtags)
                             .Where(idea => idea.Status.ToLower().Equals("implemented"))
+                            .OrderByDescending(idea => idea.Submitted)
+                            .ToList();
+                    case ("search"):
+                        return _context.Ideas.Include(idea => idea.Hashtags)
+                            .Where(idea => idea.Title.ToLower().Contains(search.ToLower())
+                            || idea.Description.ToLower().Contains(search.ToLower())
+                            || idea.Hashtags.Any(hashtag => hashtag.Tag.ToLower().Contains(search.ToLower())))
                             .OrderByDescending(idea => idea.Submitted)
                             .ToList();
                     default:
