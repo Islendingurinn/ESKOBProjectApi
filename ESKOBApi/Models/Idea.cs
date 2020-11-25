@@ -22,5 +22,6 @@ namespace ESKOBApi
 
         //public ICollection<Task> Tasks { get; set; }
         public virtual ICollection<Hashtag> Hashtags { get; set; } = new List<Hashtag>();
+        public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }
