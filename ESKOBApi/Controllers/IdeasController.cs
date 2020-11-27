@@ -12,13 +12,6 @@ namespace ESKOBApi.Controllers
     [Route("api/[controller]/[action]")]
     public class IdeasController : ControllerBase
     {
-        private readonly ILogger<IdeasController> _logger;
-
-        public IdeasController(ILogger<IdeasController> logger)
-        {
-            _logger = logger;
-        }
-
         [HttpPost]
         public HttpResponseMessage Create([FromBody] Idea idea)
         {
