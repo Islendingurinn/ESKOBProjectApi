@@ -11,10 +11,11 @@ namespace ESKOBApi.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public string Estimation { get; set; }
-        public int CreatorId { get; set; }
-        public int IdeaId { get; set; }
+        public int? CreatorId { get; set; }
+        public int? IdeaId { get; set; }
 
         public virtual Manager Creator { get; set; }
         public virtual Idea Idea { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }
