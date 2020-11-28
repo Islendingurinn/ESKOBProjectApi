@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ESKOBApi.Migrations
 {
-    public partial class CreateBase : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -36,12 +36,33 @@ namespace ESKOBApi.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    user = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    password = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Displayname = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Managers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Hashtags",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Tag = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IdeaId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Hashtags", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Hashtags_Ideas_IdeaId",
+                        column: x => x.IdeaId,
+                        principalTable: "Ideas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -54,8 +75,8 @@ namespace ESKOBApi.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Estimation = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatorId = table.Column<int>(type: "int", nullable: true),
-                    IdeaId = table.Column<int>(type: "int", nullable: true)
+                    CreatorId = table.Column<int>(type: "int", nullable: false),
+                    IdeaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -65,13 +86,13 @@ namespace ESKOBApi.Migrations
                         column: x => x.IdeaId,
                         principalTable: "Ideas",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Tasks_Managers_CreatorId",
                         column: x => x.CreatorId,
                         principalTable: "Managers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -80,10 +101,10 @@ namespace ESKOBApi.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    IdeaId = table.Column<int>(type: "int", nullable: true),
-                    TaskId = table.Column<int>(type: "int", nullable: true),
-                    AddedId = table.Column<int>(type: "int", nullable: true),
-                    AdderId = table.Column<int>(type: "int", nullable: true)
+                    IdeaId = table.Column<int>(type: "int", nullable: false),
+                    TaskId = table.Column<int>(type: "int", nullable: false),
+                    AddedId = table.Column<int>(type: "int", nullable: false),
+                    AdderId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -93,7 +114,7 @@ namespace ESKOBApi.Migrations
                         column: x => x.IdeaId,
                         principalTable: "Ideas",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Added_Users_Managers_AddedId",
                         column: x => x.AddedId,
@@ -122,8 +143,8 @@ namespace ESKOBApi.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Path = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IdeaId = table.Column<int>(type: "int", nullable: true),
-                    TaskId = table.Column<int>(type: "int", nullable: true)
+                    IdeaId = table.Column<int>(type: "int", nullable: false),
+                    TaskId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -133,7 +154,7 @@ namespace ESKOBApi.Migrations
                         column: x => x.IdeaId,
                         principalTable: "Ideas",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Attachments_Tasks_TaskId",
                         column: x => x.TaskId,
@@ -171,33 +192,6 @@ namespace ESKOBApi.Migrations
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Comments_Tasks_TaskId",
-                        column: x => x.TaskId,
-                        principalTable: "Tasks",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Hashtags",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Tag = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IdeaId = table.Column<int>(type: "int", nullable: true),
-                    TaskId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Hashtags", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Hashtags_Ideas_IdeaId",
-                        column: x => x.IdeaId,
-                        principalTable: "Ideas",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Hashtags_Tasks_TaskId",
                         column: x => x.TaskId,
                         principalTable: "Tasks",
                         principalColumn: "Id",
@@ -253,11 +247,6 @@ namespace ESKOBApi.Migrations
                 name: "IX_Hashtags_IdeaId",
                 table: "Hashtags",
                 column: "IdeaId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Hashtags_TaskId",
-                table: "Hashtags",
-                column: "TaskId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tasks_CreatorId",

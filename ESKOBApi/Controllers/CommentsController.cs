@@ -13,13 +13,7 @@ namespace ESKOBApi.Controllers
     [Route("api/[controller]/[action]")]
     public class CommentsController : ControllerBase
     {
-        private readonly ILogger<IdeasController> _logger;
-
-        public CommentsController(ILogger<IdeasController> logger)
-        {
-            _logger = logger;
-        }
-
+      
         [HttpPost]
         public HttpResponseMessage Create([FromBody] Comment comment)
         {

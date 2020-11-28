@@ -4,14 +4,16 @@ using ESKOBApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ESKOBApi.Migrations
 {
     [DbContext(typeof(ESKOBDbContext))]
-    partial class ESKOBDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201125212603_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,13 +186,13 @@ namespace ESKOBApi.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Displayname")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Type")
+                    b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -205,7 +207,7 @@ namespace ESKOBApi.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int?>("CreatorId")
+                    b.Property<int>("CreatorId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -214,7 +216,7 @@ namespace ESKOBApi.Migrations
                     b.Property<string>("Estimation")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("IdeaId")
+                    b.Property<int>("IdeaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
@@ -297,7 +299,7 @@ namespace ESKOBApi.Migrations
                         .HasForeignKey("IdeaId");
 
                     b.HasOne("ESKOBApi.Models.Task", "Task")
-                        .WithMany("Comments")
+                        .WithMany()
                         .HasForeignKey("TaskId");
 
                     b.Navigation("Author");
@@ -322,11 +324,15 @@ namespace ESKOBApi.Migrations
                 {
                     b.HasOne("ESKOBApi.Models.Manager", "Creator")
                         .WithMany()
-                        .HasForeignKey("CreatorId");
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ESKOBApi.Idea", "Idea")
-                        .WithMany("Tasks")
-                        .HasForeignKey("IdeaId");
+                        .WithMany()
+                        .HasForeignKey("IdeaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Creator");
 
@@ -338,13 +344,6 @@ namespace ESKOBApi.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Hashtags");
-
-                    b.Navigation("Tasks");
-                });
-
-            modelBuilder.Entity("ESKOBApi.Models.Task", b =>
-                {
-                    b.Navigation("Comments");
                 });
 #pragma warning restore 612, 618
         }

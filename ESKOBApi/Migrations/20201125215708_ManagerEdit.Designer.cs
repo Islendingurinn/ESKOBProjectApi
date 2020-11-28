@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ESKOBApi.Migrations
 {
     [DbContext(typeof(ESKOBDbContext))]
-    [Migration("20201121012717_AddHashtagsToIdeas")]
-    partial class AddHashtagsToIdeas
+    [Migration("20201125215708_ManagerEdit")]
+    partial class ManagerEdit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -73,16 +73,16 @@ namespace ESKOBApi.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int?>("AddedId")
+                    b.Property<int>("AddedId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("AdderId")
+                    b.Property<int>("AdderId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("IdeaId")
+                    b.Property<int>("IdeaId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TaskId")
+                    b.Property<int>("TaskId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -105,7 +105,7 @@ namespace ESKOBApi.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int?>("IdeaId")
+                    b.Property<int>("IdeaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -114,7 +114,7 @@ namespace ESKOBApi.Migrations
                     b.Property<string>("Path")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("TaskId")
+                    b.Property<int>("TaskId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -186,10 +186,10 @@ namespace ESKOBApi.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<string>("password")
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("user")
+                    b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -204,7 +204,7 @@ namespace ESKOBApi.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int?>("CreatorId")
+                    b.Property<int>("CreatorId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -213,7 +213,7 @@ namespace ESKOBApi.Migrations
                     b.Property<string>("Estimation")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("IdeaId")
+                    b.Property<int>("IdeaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
@@ -235,19 +235,27 @@ namespace ESKOBApi.Migrations
                 {
                     b.HasOne("ESKOBApi.Models.Manager", "Added")
                         .WithMany()
-                        .HasForeignKey("AddedId");
+                        .HasForeignKey("AddedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ESKOBApi.Models.Manager", "Adder")
                         .WithMany()
-                        .HasForeignKey("AdderId");
+                        .HasForeignKey("AdderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ESKOBApi.Idea", "Idea")
                         .WithMany()
-                        .HasForeignKey("IdeaId");
+                        .HasForeignKey("IdeaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ESKOBApi.Models.Task", "Task")
                         .WithMany()
-                        .HasForeignKey("TaskId");
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Added");
 
@@ -262,11 +270,15 @@ namespace ESKOBApi.Migrations
                 {
                     b.HasOne("ESKOBApi.Idea", "Idea")
                         .WithMany()
-                        .HasForeignKey("IdeaId");
+                        .HasForeignKey("IdeaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ESKOBApi.Models.Task", "Task")
                         .WithMany()
-                        .HasForeignKey("TaskId");
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Idea");
 
@@ -280,7 +292,7 @@ namespace ESKOBApi.Migrations
                         .HasForeignKey("AuthorId");
 
                     b.HasOne("ESKOBApi.Idea", "Idea")
-                        .WithMany()
+                        .WithMany("Comments")
                         .HasForeignKey("IdeaId");
 
                     b.HasOne("ESKOBApi.Models.Task", "Task")
@@ -309,11 +321,15 @@ namespace ESKOBApi.Migrations
                 {
                     b.HasOne("ESKOBApi.Models.Manager", "Creator")
                         .WithMany()
-                        .HasForeignKey("CreatorId");
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ESKOBApi.Idea", "Idea")
                         .WithMany()
-                        .HasForeignKey("IdeaId");
+                        .HasForeignKey("IdeaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Creator");
 
@@ -322,6 +338,8 @@ namespace ESKOBApi.Migrations
 
             modelBuilder.Entity("ESKOBApi.Idea", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Hashtags");
                 });
 #pragma warning restore 612, 618

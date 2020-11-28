@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 namespace ESKOBApi.Models
@@ -15,7 +16,9 @@ namespace ESKOBApi.Models
         public virtual Idea Idea { get; set; }
         public virtual Task Task { get; set; }
 
+        [ForeignKey("AddedId")]
         public virtual Manager Added { get; set; }
+        [ForeignKey("AdderId")]
         public virtual Manager Adder { get; set; }
     }
 }
