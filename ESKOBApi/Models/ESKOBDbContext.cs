@@ -1,4 +1,6 @@
+using ESKOBApi.Authentication;
 using ESKOBApi.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using System;
@@ -9,7 +11,7 @@ namespace ESKOBApi
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Data Source=DESKTOP-VIAUEKC;Initial Catalog=Test;Integrated Security=True;MultipleActiveResultSets=true")
+            optionsBuilder.UseSqlServer(@"Data Source=DESKTOP-NFUOR0K;Initial Catalog=Test;Integrated Security=True;MultipleActiveResultSets=true")
             .UseLazyLoadingProxies();
 
             optionsBuilder.ConfigureWarnings(warnings => warnings
@@ -23,5 +25,17 @@ namespace ESKOBApi
         public DbSet<Added_User> Added_Users { get; set; }
         public DbSet<Hashtag> Hashtags { get; set; }
         public DbSet<Manager> Managers { get; set; }
+    }
+
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        {
+
+        }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+        }
     }
 }
