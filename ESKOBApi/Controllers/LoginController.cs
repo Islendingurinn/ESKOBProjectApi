@@ -63,7 +63,7 @@ namespace ESKOBApi.Controllers
             //Demo Purpose, I have Passed HardCoded User Information    
             if (login.userName == "adam")
             {
-                user = new Manager { userName = "adam smithi" };
+                user = new Manager { userName = "adam smith" };
             }
             return user;
         }
