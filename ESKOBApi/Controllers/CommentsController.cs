@@ -10,16 +10,17 @@ using Microsoft.Extensions.Logging;
 namespace ESKOBApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]/[action]")]
+    [Route("{tenant}/[controller]/[action]")]
     public class CommentsController : ControllerBase
     {
       
         [HttpPost]
-        public HttpResponseMessage Create([FromBody] Comment comment)
+        public HttpResponseMessage Create([FromBody] Comment comment, string tenant)
         {
             using (var _context = new ESKOBDbContext())
             {
                 comment.Date = DateTime.Now;
+                comment.TenantId = _context.Tenants.Where(t => t.Reference == tenant).FirstOrDefault().Id;
                 _context.Comments.Add(comment);
                 _context.SaveChanges();
 

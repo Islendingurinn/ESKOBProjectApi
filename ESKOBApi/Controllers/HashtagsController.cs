@@ -10,24 +10,26 @@ using Microsoft.EntityFrameworkCore;
 namespace ESKOBApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]/[action]")]
+    [Route("{tenant}/[controller]/[action]")]
     public class HashtagsController : ControllerBase
     {
         [HttpGet]
         [Route("{tag}")]
-        public IEnumerable<Idea> GetIdeas(string tag)
+        public IEnumerable<Idea> GetIdeas(string tag, string tenant)
         {
             using (var _context = new ESKOBDbContext())
             {
-                return _context.Hashtags.Where(hashtag => hashtag.Tag == tag).Include(i => i.Idea.Hashtags).Select(idea => idea.Idea).ToList();
+                int tenantId = _context.Tenants.Where(t => t.Reference == tenant).FirstOrDefault().Id;
+                return _context.Hashtags.Where(hashtag => hashtag.Tag == tag && hashtag.TenantId == tenantId).Include(i => i.Idea.Hashtags).Select(idea => idea.Idea).ToList();
             }
         }
 
         [HttpPost]
-        public HttpResponseMessage Create([FromBody] Hashtag hashtag)
+        public HttpResponseMessage Create([FromBody] Hashtag hashtag, string tenant)
         {
             using (var _context = new ESKOBDbContext())
             {
+                hashtag.TenantId = _context.Tenants.Where(t => t.Reference == tenant).FirstOrDefault().Id;
                 _context.Hashtags.Add(hashtag);
                 _context.SaveChanges();
             }
