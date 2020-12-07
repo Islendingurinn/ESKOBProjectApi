@@ -10,17 +10,18 @@ using Microsoft.Extensions.Logging;
 namespace ESKOBApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]/[action]")]
+    [Route("{tenant}/[controller]/[action]")]
     public class IdeasController : ControllerBase
     {
         [HttpPost]
-        public HttpResponseMessage Create([FromBody] Idea idea)
+        public HttpResponseMessage Create([FromBody] Idea idea, string tenant)
         {
             using (var _context = new ESKOBDbContext())
             {
                 idea.Submitted = DateTime.Now;
                 idea.Last_Edit = DateTime.Now;
                 idea.Status = "NEW";
+                idea.TenantId = _context.Tenants.Where(t => t.Reference == tenant).FirstOrDefault().Id;
                 _context.Ideas.Add(idea);
                 _context.SaveChanges();
 

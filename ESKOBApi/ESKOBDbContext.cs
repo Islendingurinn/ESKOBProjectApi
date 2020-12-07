@@ -23,5 +23,6 @@ namespace ESKOBApi
         public DbSet<Added_User> Added_Users { get; set; }
         public DbSet<Hashtag> Hashtags { get; set; }
         public DbSet<Manager> Managers { get; set; }
+        public DbSet<Tenant> Tenants { get; set; }
     }
 }

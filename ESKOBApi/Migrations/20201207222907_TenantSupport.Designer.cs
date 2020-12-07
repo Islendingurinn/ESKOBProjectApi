@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ESKOBApi.Migrations
 {
     [DbContext(typeof(ESKOBDbContext))]
-    [Migration("20201207215827_TenantSupport")]
+    [Migration("20201207222907_TenantSupport")]
     partial class TenantSupport
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -284,7 +284,7 @@ namespace ESKOBApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tenant");
+                    b.ToTable("Tenants");
                 });
 
             modelBuilder.Entity("ESKOBApi.Idea", b =>

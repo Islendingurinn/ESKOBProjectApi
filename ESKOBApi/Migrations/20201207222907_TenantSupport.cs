@@ -55,7 +55,7 @@ namespace ESKOBApi.Migrations
                 defaultValue: 0);
 
             migrationBuilder.CreateTable(
-                name: "Tenant",
+                name: "Tenants",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -65,7 +65,7 @@ namespace ESKOBApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tenant", x => x.Id);
+                    table.PrimaryKey("PK_Tenants", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(
@@ -104,58 +104,58 @@ namespace ESKOBApi.Migrations
                 column: "TenantId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Added_Users_Tenant_TenantId",
+                name: "FK_Added_Users_Tenants_TenantId",
                 table: "Added_Users",
                 column: "TenantId",
-                principalTable: "Tenant",
+                principalTable: "Tenants",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Attachments_Tenant_TenantId",
+                name: "FK_Attachments_Tenants_TenantId",
                 table: "Attachments",
                 column: "TenantId",
-                principalTable: "Tenant",
+                principalTable: "Tenants",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Comments_Tenant_TenantId",
+                name: "FK_Comments_Tenants_TenantId",
                 table: "Comments",
                 column: "TenantId",
-                principalTable: "Tenant",
+                principalTable: "Tenants",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Hashtags_Tenant_TenantId",
+                name: "FK_Hashtags_Tenants_TenantId",
                 table: "Hashtags",
                 column: "TenantId",
-                principalTable: "Tenant",
+                principalTable: "Tenants",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Ideas_Tenant_TenantId",
+                name: "FK_Ideas_Tenants_TenantId",
                 table: "Ideas",
                 column: "TenantId",
-                principalTable: "Tenant",
+                principalTable: "Tenants",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Managers_Tenant_TenantId",
+                name: "FK_Managers_Tenants_TenantId",
                 table: "Managers",
                 column: "TenantId",
-                principalTable: "Tenant",
+                principalTable: "Tenants",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Tasks_Tenant_TenantId",
+                name: "FK_Tasks_Tenants_TenantId",
                 table: "Tasks",
                 column: "TenantId",
-                principalTable: "Tenant",
+                principalTable: "Tenants",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }
@@ -163,35 +163,35 @@ namespace ESKOBApi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Added_Users_Tenant_TenantId",
+                name: "FK_Added_Users_Tenants_TenantId",
                 table: "Added_Users");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Attachments_Tenant_TenantId",
+                name: "FK_Attachments_Tenants_TenantId",
                 table: "Attachments");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Comments_Tenant_TenantId",
+                name: "FK_Comments_Tenants_TenantId",
                 table: "Comments");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Hashtags_Tenant_TenantId",
+                name: "FK_Hashtags_Tenants_TenantId",
                 table: "Hashtags");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Ideas_Tenant_TenantId",
+                name: "FK_Ideas_Tenants_TenantId",
                 table: "Ideas");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Managers_Tenant_TenantId",
+                name: "FK_Managers_Tenants_TenantId",
                 table: "Managers");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Tasks_Tenant_TenantId",
+                name: "FK_Tasks_Tenants_TenantId",
                 table: "Tasks");
 
             migrationBuilder.DropTable(
-                name: "Tenant");
+                name: "Tenants");
 
             migrationBuilder.DropIndex(
                 name: "IX_Tasks_TenantId",
