@@ -1,4 +1,4 @@
-using ESKOBApi.Authentication;
+
 using ESKOBApi.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -26,16 +26,6 @@ namespace ESKOBApi
         public DbSet<Hashtag> Hashtags { get; set; }
         public DbSet<Manager> Managers { get; set; }
     }
-
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
-    {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-        {
-
-        }
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
-        }
-    }
 }
+
+    
