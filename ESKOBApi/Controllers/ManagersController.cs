@@ -10,16 +10,19 @@ using Microsoft.Extensions.Logging;
 namespace ESKOBApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]/[action]")]
+    [Route("{tenant}/[controller]/[action]")]
     public class ManagersController : ControllerBase
     {
 
         [HttpGet]
-        public IEnumerable<Manager> GetAll()
+        public IEnumerable<Manager> GetAll(string tenant)
         {
             using(var _context = new ESKOBDbContext())
             {
-                return _context.Managers.Select(manager =>
+                int tenantId = _context.Tenants.Where(t => t.Reference == tenant).FirstOrDefault().Id;
+                return _context.Managers
+                    .Where(manager => manager.TenantId == tenantId)
+                    .Select(manager =>
                 new Manager
                 {
                     Id = manager.Id,

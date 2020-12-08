@@ -11,8 +11,10 @@ namespace ESKOBApi.Models
         public string Path { get; set; }
         public int IdeaId { get; set; }
         public int TaskId { get; set; }
+        public int TenantId { get; set; }
 
         public virtual Idea Idea { get; set; }
         public virtual Task Task { get; set; }
+        public virtual Tenant Tenant { get; set; }
     }
 }

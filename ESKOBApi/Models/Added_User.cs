@@ -12,6 +12,7 @@ namespace ESKOBApi.Models
         public int TaskId { get; set; }
         public int AddedId { get; set; }
         public int AdderId { get; set; }
+        public int TenantId { get; set; }
 
         public virtual Idea Idea { get; set; }
         public virtual Task Task { get; set; }
@@ -20,5 +21,6 @@ namespace ESKOBApi.Models
         public virtual Manager Added { get; set; }
         [ForeignKey("AdderId")]
         public virtual Manager Adder { get; set; }
+        public virtual Tenant Tenant { get; set; }
     }
 }

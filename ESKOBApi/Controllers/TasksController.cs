@@ -10,15 +10,16 @@ using Microsoft.Extensions.Logging;
 namespace ESKOBApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]/[action]")]
+    [Route("{tenant}/[controller]/[action]")]
     public class TasksController : ControllerBase
     {
         [HttpPost]
-        public HttpResponseMessage Create([FromBody] Task task)
+        public HttpResponseMessage Create([FromBody] Task task, string tenant)
         {
             using (var _context = new ESKOBDbContext())
             {
                 task.Status = "NOT_STARTED";
+                task.TenantId = _context.Tenants.Where(t => t.Reference == tenant).FirstOrDefault().Id;
                 _context.Tasks.Add(task);
                 _context.SaveChanges();
                 return new HttpResponseMessage(){};

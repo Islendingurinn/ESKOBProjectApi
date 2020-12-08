@@ -10,17 +10,19 @@ using Microsoft.Extensions.Logging;
 namespace ESKOBApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]/[action]")]
+    [Route("{tenant}/[controller]/[action]")]
     public class IdeasController : ControllerBase
     {
         [HttpPost]
-        public HttpResponseMessage Create([FromBody] Idea idea)
+        public HttpResponseMessage Create([FromBody] Idea idea, string tenant)
         {
             using (var _context = new ESKOBDbContext())
             {
                 idea.Submitted = DateTime.Now;
                 idea.Last_Edit = DateTime.Now;
                 idea.Status = "NEW";
+                System.Diagnostics.Debug.WriteLine("Tenant: " + tenant);
+                idea.TenantId = _context.Tenants.Where(t => t.Reference == tenant).FirstOrDefault().Id;
                 _context.Ideas.Add(idea);
                 _context.SaveChanges();
 
@@ -55,88 +57,100 @@ namespace ESKOBApi.Controllers
 
         [HttpGet]
         [Route("{parameter}/{search?}")]
-        public IEnumerable<Idea> Get(string parameter, string search)
+        public IEnumerable<Idea> Get(string parameter, string search, string tenant)
         {
             DateTime now = DateTime.Now;
             using(var _context = new ESKOBDbContext())
             {
+                int tenantId = _context.Tenants.Where(t => t.Reference == tenant).FirstOrDefault().Id; 
                 switch (parameter.ToLower())
                 {
                     case ("day"):
                         return _context.Ideas.Include(idea => idea.Hashtags)
                             .Include(idea => idea.Comments)
                             .Where(idea => idea.Submitted >= now.AddHours(-24) 
-                            && !idea.Status.ToLower().Equals("deleted"))
+                            && !idea.Status.ToLower().Equals("deleted")
+                            && idea.TenantId == tenantId)
                             .OrderByDescending(idea => idea.Submitted)
                             .ToList();
                     case ("week"):
                         return _context.Ideas.Include(idea => idea.Hashtags)
                             .Include(idea => idea.Comments)
                             .Where(idea => idea.Submitted >= now.AddDays(-7)
-                            && !idea.Status.ToLower().Equals("deleted"))
+                            && !idea.Status.ToLower().Equals("deleted")
+                            && idea.TenantId == tenantId)
                             .OrderByDescending(idea => idea.Submitted)
                             .ToList();
                     case ("month"):
                         return _context.Ideas.Include(idea => idea.Hashtags)
                             .Include(idea => idea.Comments)
                             .Where(idea => idea.Submitted >= now.AddMonths(-1)
-                            && !idea.Status.ToLower().Equals("deleted"))
+                            && !idea.Status.ToLower().Equals("deleted")
+                            && idea.TenantId == tenantId)
                             .OrderByDescending(idea => idea.Submitted)
                             .ToList();
                     case ("year"):
                         return _context.Ideas.Include(idea => idea.Hashtags)
                             .Include(idea => idea.Comments)
                             .Where(idea => idea.Submitted >= now.AddYears(-1)
-                            && !idea.Status.ToLower().Equals("deleted"))
+                            && !idea.Status.ToLower().Equals("deleted")
+                            && idea.TenantId == tenantId)
                             .OrderByDescending(idea => idea.Submitted)
                             .ToList();
                     case ("h"):
                         return _context.Ideas.Include(idea => idea.Hashtags)
                             .Include(idea => idea.Comments)
                             .Where(idea => idea.Priority.ToLower().Equals("h")
-                            && !idea.Status.ToLower().Equals("deleted"))
+                            && !idea.Status.ToLower().Equals("deleted")
+                            && idea.TenantId == tenantId)
                             .OrderByDescending(idea => idea.Submitted)
                             .ToList();
                     case ("m"):
                         return _context.Ideas.Include(idea => idea.Hashtags)
                             .Include(idea => idea.Comments)
                             .Where(idea => idea.Priority.ToLower().Equals("m")
-                            && !idea.Status.ToLower().Equals("deleted"))
+                            && !idea.Status.ToLower().Equals("deleted")
+                            && idea.TenantId == tenantId)
                             .OrderByDescending(idea => idea.Submitted)
                             .ToList();
                     case("l"):
                         return _context.Ideas.Include(idea => idea.Hashtags)
                             .Include(idea => idea.Comments)
                             .Where(idea => idea.Priority.ToLower().Equals("l")
-                            && !idea.Status.ToLower().Equals("deleted"))
+                            && !idea.Status.ToLower().Equals("deleted")
+                            && idea.TenantId == tenantId)
                             .OrderByDescending(idea => idea.Submitted)
                             .ToList();
                     case ("new"):
                         return _context.Ideas.Include(idea => idea.Hashtags)
                             .Include(idea => idea.Comments)
                             .Where(idea => idea.Status.ToLower().Equals("new")
-                            && !idea.Status.ToLower().Equals("deleted"))
+                            && !idea.Status.ToLower().Equals("deleted")
+                            && idea.TenantId == tenantId)
                             .OrderByDescending(idea => idea.Submitted)
                             .ToList();
                     case ("under_review"):
                         return _context.Ideas.Include(idea => idea.Hashtags)
                             .Include(idea => idea.Comments)
                             .Where(idea => idea.Status.ToLower().Equals("under_review")
-                            && !idea.Status.ToLower().Equals("deleted"))
+                            && !idea.Status.ToLower().Equals("deleted")
+                            && idea.TenantId == tenantId)
                             .OrderByDescending(idea => idea.Submitted)
                             .ToList();
                     case ("under_implementation"):
                         return _context.Ideas.Include(idea => idea.Hashtags)
                             .Include(idea => idea.Comments)
                             .Where(idea => idea.Status.ToLower().Equals("under_implementation")
-                            && !idea.Status.ToLower().Equals("deleted"))
+                            && !idea.Status.ToLower().Equals("deleted")
+                            && idea.TenantId == tenantId)
                             .OrderByDescending(idea => idea.Submitted)
                             .ToList();
                     case ("implemented"):
                         return _context.Ideas.Include(idea => idea.Hashtags)
                             .Include(idea => idea.Comments)
                             .Where(idea => idea.Status.ToLower().Equals("implemented")
-                            && !idea.Status.ToLower().Equals("deleted"))
+                            && !idea.Status.ToLower().Equals("deleted")
+                            && idea.TenantId == tenantId)
                             .OrderByDescending(idea => idea.Submitted)
                             .ToList();
                     case ("search"):
@@ -145,13 +159,15 @@ namespace ESKOBApi.Controllers
                             .Where(idea => idea.Title.ToLower().Contains(search.ToLower())
                             || idea.Description.ToLower().Contains(search.ToLower())
                             || idea.Hashtags.Any(hashtag => hashtag.Tag.ToLower().Contains(search.ToLower()))
-                            && !idea.Status.ToLower().Equals("deleted"))
+                            && !idea.Status.ToLower().Equals("deleted")
+                            && idea.TenantId == tenantId)
                             .OrderByDescending(idea => idea.Submitted)
                             .ToList();
                     default:
                         return _context.Ideas.Include(idea => idea.Hashtags)
                         .Include(idea => idea.Comments)
-                        .Where(idea => !idea.Status.ToLower().Equals("deleted")).
+                        .Where(idea => !idea.Status.ToLower().Equals("deleted")
+                        && idea.TenantId == tenantId).
                         OrderByDescending(idea => idea.Submitted).ToList();
                 }
             }
