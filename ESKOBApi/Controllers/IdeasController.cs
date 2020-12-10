@@ -21,7 +21,7 @@ namespace ESKOBApi.Controllers
                 idea.Submitted = DateTime.Now;
                 idea.Last_Edit = DateTime.Now;
                 idea.Status = "NEW";
-                System.Diagnostics.Debug.WriteLine("Tenant: " + tenant);
+
                 idea.TenantId = _context.Tenants.Where(t => t.Reference == tenant).FirstOrDefault().Id;
                 _context.Ideas.Add(idea);
                 _context.SaveChanges();
