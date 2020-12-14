@@ -28,7 +28,7 @@ namespace TokenAuthenticationInWebAPI.App_Start
                 //Setting the Token Expired Time (24 hours)
                 AccessTokenExpireTimeSpan = TimeSpan.FromDays(1),
 
-                //MyAuthorizationServerProvider class will validate the user credentials
+                //AuthorizationServerProvider class will validate the user credentials
                 Provider = new AuthorizationServerProvider()
             };
 
