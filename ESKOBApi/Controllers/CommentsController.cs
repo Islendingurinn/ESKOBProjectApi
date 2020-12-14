@@ -1,31 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
+using System.Threading.Tasks;
 using ESKOBApi.Models;
+using ESKOBApi.Models.Comments;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace ESKOBApi.Controllers
 {
     [ApiController]
-    [Route("{tenant}/[controller]/[action]")]
+    [Route("{reference}/[controller]")]
     public class CommentsController : ControllerBase
     {
       
         [HttpPost]
-        public HttpResponseMessage Create([FromBody] Comment comment, string tenant)
+        public async Task<IActionResult> Create([FromBody] CreateComment newcomment, string reference)
         {
-            using (var _context = new ESKOBDbContext())
+            if (!ModelState.IsValid)
             {
-                comment.Date = DateTime.Now;
-                comment.TenantId = _context.Tenants.Where(t => t.Reference == tenant).FirstOrDefault().Id;
-                _context.Comments.Add(comment);
-                _context.SaveChanges();
-
-                return new HttpResponseMessage(){};
+                return BadRequest(ModelState);
             }
+
+            using var _context = new ESKOBDbContext();
+            Tenant tenant = _context.Tenants.Where(t => t.Reference == reference).FirstOrDefault();
+            if (tenant == null) return NotFound(reference);
+
+            Comment comment = new Comment
+            {
+                Date = DateTime.Now,
+                TenantId = tenant.Id,
+                Body = newcomment.Body,
+                IdeaId = newcomment.IdeaId,
+                TaskId = newcomment.TaskId
+            };
+
+            await _context.Comments.AddAsync(comment);
+            await _context.SaveChangesAsync();
+
+            return Ok(comment);
         }
     }
 }

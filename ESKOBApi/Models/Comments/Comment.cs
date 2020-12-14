@@ -1,10 +1,9 @@
-﻿using System;
+﻿using ESKOBApi.Models.Comments;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-
 namespace ESKOBApi.Models
 {
-    public class Comment
+    public class Comment : CreateComment
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
