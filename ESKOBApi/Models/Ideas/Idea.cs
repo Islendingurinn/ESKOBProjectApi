@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ESKOBApi
 {
-    public class Idea : CreateIdea
+    public class Idea
     {
         public int Id { get; set; }
         public DateTime Submitted { get; set; }

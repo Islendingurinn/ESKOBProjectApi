@@ -1,76 +1,103 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using ESKOBApi.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace ESKOBApi.Controllers
 {
     [ApiController]
-    [Route("{tenant}/[controller]/[action]")]
+    [Route("{reference}/[controller]")]
     public class ManagersController : ControllerBase
     {
 
         [HttpPost]
-        public HttpResponseMessage Create([FromBody] Manager manager, string tenant)
+        public async Task<ActionResult> Create([FromBody] CreateManager createmanager, string reference)
         {
-            using (var _context = new ESKOBDbContext())
+            if (!ModelState.IsValid)
             {
-                //todo: password
-                manager.Password = manager.Name;
-
-                _context.Managers.Add(manager);
-                _context.SaveChanges();
-
-                return new HttpResponseMessage();
+                return BadRequest(ModelState);
             }
+            
+            using var _context = new ESKOBDbContext();
+            Tenant tenant = _context.Tenants.Where(t => t.Reference == reference).FirstOrDefault();
+            if (tenant == null) return NotFound(reference);
+
+            //todo: password
+            Manager manager = new Manager
+            {
+                Name = createmanager.Name,
+                Password = createmanager.Password,
+                TenantId = tenant.Id
+            };
+
+            await _context.Managers.AddAsync(manager);
+            await _context.SaveChangesAsync();
+
+            DummyManager dummy = new DummyManager
+            {
+                Id = manager.Id,
+                Name = manager.Name,
+                TenantId = manager.TenantId
+            };
+
+            return Ok(dummy);
         }
 
-        [HttpPost]
-        public HttpResponseMessage Edit([FromBody] Manager manager)
-        {
-            using (var _context = new ESKOBDbContext())
-            {
-                Manager edit = _context.Managers.Where(m => m.Id == manager.Id).FirstOrDefault();
-                edit.Name = manager.Name;
-                _context.SaveChanges();
-
-                return new HttpResponseMessage();
-            }
-        }
-
-        [HttpGet]
+        [HttpPut]
         [Route("{id:int}")]
-        public void Delete(int id)
+        public async Task<ActionResult> Edit([FromBody] EditManager editmanager, int id)
         {
-            using(var _context = new ESKOBDbContext())
+            if (!ModelState.IsValid)
             {
-                Manager manager = _context.Managers.Where(m => m.Id == id).FirstOrDefault();
-                _context.Managers.Remove(manager);
-                _context.SaveChanges();
+                return BadRequest(ModelState);
             }
+
+            using var _context = new ESKOBDbContext();
+            Manager manager = _context.Managers.Where(m => m.Id == id).FirstOrDefault();
+            if (manager == null) return NotFound(id);
+
+            manager.Name = editmanager.Name;
+            await _context.SaveChangesAsync();
+
+            DummyManager dummy = new DummyManager
+            {
+                Id = manager.Id,
+                Name = manager.Name,
+                TenantId = manager.TenantId
+            };
+
+            return Ok(dummy);
+        }
+
+        [HttpDelete]
+        [Route("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            using var _context = new ESKOBDbContext();
+            Manager manager = _context.Managers.Where(m => m.Id == id).FirstOrDefault();
+            if (manager == null) return NotFound(id);
+
+            _context.Managers.Remove(manager);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
 
         [HttpGet]
-        public IEnumerable<Manager> GetAll(string tenant)
+        public ActionResult GetAll(string reference)
         {
-            using(var _context = new ESKOBDbContext())
-            {
-                int tenantId = _context.Tenants.Where(t => t.Reference.Equals(tenant)).FirstOrDefault().Id;
-                return _context.Managers
-                    .Where(manager => manager.TenantId == tenantId)
-                    .Select(manager =>
-                new Manager
+            using var _context = new ESKOBDbContext();
+            Tenant tenant = _context.Tenants.Where(t => t.Reference.Equals(reference)).FirstOrDefault();
+            if (tenant == null) return NotFound(reference);
+
+            return Ok(_context.Managers
+                .Where(manager => manager.TenantId == tenant.Id)
+                .Select(manager =>
+                new DummyManager
                 {
                     Id = manager.Id,
                     Name = manager.Name,
                     TenantId = manager.TenantId
-                }
-                ).ToList();
-            }
+                }).ToList());
         }
     }
 }

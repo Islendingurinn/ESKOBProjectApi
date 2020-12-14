@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 namespace ESKOBApi.Models
 {
-    public class Comment : CreateComment
+    public class Comment
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
