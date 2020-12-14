@@ -1,82 +1,100 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
+using System.Threading.Tasks;
 using ESKOBApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace ESKOBApi.Controllers
 {
     [ApiController]
-    [Route("{tenant}/[controller]/[action]")]
+    [Route("{reference}/[controller]")]
     public class TasksController : ControllerBase
     {
         [HttpPost]
-        public HttpResponseMessage Create([FromBody] Task task, string tenant)
+        public async Task<ActionResult> Create([FromBody] CreateTask createtask, string reference)
         {
-            using (var _context = new ESKOBDbContext())
+            if (!ModelState.IsValid)
             {
-                task.Status = "NOT_STARTED";
-                task.TenantId = _context.Tenants.Where(t => t.Reference == tenant).FirstOrDefault().Id;
-                _context.Tasks.Add(task);
-                _context.SaveChanges();
-                return new HttpResponseMessage(){};
+                return BadRequest(ModelState);
             }
+
+            using var _context = new ESKOBDbContext();
+            Tenant tenant = _context.Tenants.Where(t => t.Reference == reference).FirstOrDefault();
+            if (tenant == null) return NotFound(reference);
+
+            Models.Task task = new Models.Task
+            {
+                Status = "NOT_STARTED",
+                TenantId = tenant.Id,
+                Title = createtask.Title,
+                Description = createtask.Description,
+                Estimation = createtask.Estimation,
+                IdeaId = createtask.IdeaId
+            };
+
+            await _context.Tasks.AddAsync(task);
+            await _context.SaveChangesAsync();
+            return Ok(task);
         }
 
         [HttpGet]
         [Route("{id:int}")]
-        public Task Get(int id)
+        public ActionResult Get(int id)
         {
-            using (var _context = new ESKOBDbContext())
-            {
-                Task task = _context.Tasks.Where(x => x.Id == id)
-                    .Include(tasks => tasks.Idea)
-                    .Include(tasks => tasks.Creator)
-                    .Include(tasks => tasks.Comments).FirstOrDefault();
+            using var _context = new ESKOBDbContext();
 
-                if(task.Creator == null)
-                {
-                    task.Creator = new Manager { Id = -1, Name = "Undefined" };
-                }
-                task.Creator.Password = String.Empty;
-                return task;
+            Models.Task task = _context.Tasks.Where(x => x.Id == id)
+                .Include(tasks => tasks.Idea)
+                .Include(tasks => tasks.Creator)
+                .Include(tasks => tasks.Comments).FirstOrDefault();
+
+            if (task == null) return NotFound(id);
+
+            if (task.Creator == null)
+            {
+                task.Creator = new Manager { Id = -1, Name = "Undefined" };
             }
+
+            return Ok(task);
         }
 
-        [HttpGet]
-        [Route("{status}/{id:int}")]
-        public void Escalate(string status, int id)
+        [HttpPut]
+        [Route("{id:int}/{status}")]
+        public async Task<ActionResult> Escalate(string status, int id)
         {
-            using(var _context = new ESKOBDbContext())
+            using var _context = new ESKOBDbContext();
+            Models.Task task = _context.Tasks.Where(i => i.Id == id).FirstOrDefault();
+            if (task == null) return NotFound(id);
+
+            String newStatus = "";
+            switch (status.ToUpper())
             {
-                Task task = _context.Tasks.Where(i => i.Id == id).FirstOrDefault();
-                switch (status.ToUpper())
-                {
-                    case "IN_PROGRESS":
-                        if (task.Status.ToLower().Equals("not_started"))
-                        {
-                            task.Status = status;
-                            _context.SaveChanges();
-                        }
-                        break;
-                    case "DONE":
-                        if (task.Status.ToLower().Equals("in_progress"))
-                        {
-                            task.Status = status;
-                            _context.SaveChanges();
-                        }
-                        break;
-                    case "DELETED":
-                        task.Status = status;
-                        _context.SaveChanges();
-                        break;
-                    default:
-                        break;
-                }
+                case "IN_PROGRESS":
+                    if (task.Status.ToLower().Equals("not_started"))
+                    {
+                        newStatus = status;
+                    }
+                    break;
+                case "DONE":
+                    if (task.Status.ToLower().Equals("in_progress"))
+                    {
+                        newStatus = status;
+                    }
+                    break;
+                case "DELETED":
+                    newStatus = status;
+                    break;
+                default:
+                    return BadRequest(status);
             }
+
+            if (newStatus.Equals(""))
+                return BadRequest(status + " does not come after " + task.Status);
+
+            task.Status = newStatus;
+            await _context.SaveChangesAsync();
+            return Ok(task);
         }
     }
 }

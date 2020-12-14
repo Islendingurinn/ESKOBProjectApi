@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace ESKOBApi.Models
 {
@@ -14,9 +12,6 @@ namespace ESKOBApi.Models
         public int? AuthorId { get; set; }
         public int TenantId { get; set; }
 
-        public virtual Idea Idea { get; set; }
-        public virtual Task Task { get; set; }
-        public virtual Manager Author { get; set; }
-        public virtual Tenant Tenant { get; set; }
+        public virtual DummyManager Author { get; set; }
     }
 }
