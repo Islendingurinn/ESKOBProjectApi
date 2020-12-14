@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ESKOBApi.Models
 {
@@ -11,6 +8,6 @@ namespace ESKOBApi.Models
         public string Name { get; set; }
         public string Reference { get; set; }
 
-        public virtual ICollection<Manager> Managers { get; set; } = new List<Manager>();
+        public virtual ICollection<DummyManager> Managers { get; set; } = new List<DummyManager>();
     }
 }
