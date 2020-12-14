@@ -211,7 +211,6 @@ namespace ESKOBApi.Controllers
                 {
                     c.Author = new Manager { Id = -1, Name = "Undefined" };
                 };
-                c.Author.Password = string.Empty;
             }
 
             foreach (Models.Task t in idea.Tasks)
@@ -220,7 +219,6 @@ namespace ESKOBApi.Controllers
                 {
                     t.Creator = new Manager { Id = -1, Name = "Undefined" };
                 }
-                t.Creator.Password = string.Empty;
             }
 
             return Ok(idea);
