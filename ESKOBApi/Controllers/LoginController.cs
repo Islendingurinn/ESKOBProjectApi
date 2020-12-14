@@ -7,65 +7,23 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Web.Http;
 
 namespace ESKOBApi.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [System.Web.Http.Route("api/[controller]/[action]")]
     [ApiController]
     public class AccountController : Controller
     {
-        private IConfiguration _config;
-
-        public AccountController(IConfiguration config)
-        {
-            _config = config;
-        }
-        [AllowAnonymous]
-        [HttpPost]
-        public IActionResult Login([FromBody] Manager login)
-        {
-            IActionResult response = Unauthorized();
-            var user = AuthenticateUser(login);
-
-            if (user != null)
+            //This resource is For all types of role
+            [System.Web.Http.Authorize(Roles = "SuperAdmin, Admin, User")]
+            [System.Web.Http.HttpGet]
+           
+            public IHttpActionResult GetResource1()
             {
-                var tokenString = GenerateJSONWebToken(user);
-                response = Ok(new { token = tokenString });
+                var identity = (ClaimsIdentity)User.Identity;
+                return (IHttpActionResult)Ok("Hello: " + identity.Name);
             }
 
-            return response;
-        }
 
-        private string GenerateJSONWebToken(Manager userInfo)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[]
-            {
-                 new Claim(JwtRegisteredClaimNames.Sub, userInfo.userName),
-            };
-
-            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
-              _config["Jwt:Issuer"],
-              null,
-              expires: DateTime.Now.AddMinutes(120),
-              signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        private Manager AuthenticateUser(Manager login)
-        {
-            Manager user = null;
-
-            //Validate the User Credentials    
-            //Demo Purpose, I have Passed HardCoded User Information    
-            if (login.userName == "adam")
-            {
-                user = new Manager { userName = "adam smith" };
-            }
-            return user;
-        }
-    }
-}
+        } } 
