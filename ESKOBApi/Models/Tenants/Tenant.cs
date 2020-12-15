@@ -8,6 +8,6 @@ namespace ESKOBApi.Models
         public string Name { get; set; }
         public string Reference { get; set; }
 
-        public virtual ICollection<DummyManager> Managers { get; set; } = new List<DummyManager>();
+        public virtual ICollection<Manager> Managers { get; set; } = new List<Manager>();
     }
 }
