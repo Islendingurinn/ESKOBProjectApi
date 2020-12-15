@@ -11,6 +11,7 @@ namespace ESKOBApi.Controllers
     [Route("{reference}/[controller]")]
     public class IdeasController : ControllerBase
     {
+        
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] CreateIdea createidea, string reference)
         {
@@ -36,6 +37,7 @@ namespace ESKOBApi.Controllers
                 Priority = createidea.Priority
             };
 
+            if (_context.Ideas == null) throw new Exception("this shit is broken");
             await _context.Ideas.AddAsync(idea);
             await _context.SaveChangesAsync();
 

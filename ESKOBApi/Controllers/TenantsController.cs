@@ -32,6 +32,11 @@ namespace ESKOBApi.Controllers
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] CreateTenant createtenant)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             using var _context = new ESKOBDbContext();
             Tenant tenant = new Tenant
             {
