@@ -11,7 +11,7 @@ namespace ESKOBApi.Controllers
     {
 
         [HttpGet]
-        [Route("{id?:int}")]
+        [Route("{id:int?}")]
         public ActionResult Get(int id)
         {
             using var _context = new ESKOBDbContext();
@@ -46,7 +46,7 @@ namespace ESKOBApi.Controllers
         }
 
         [HttpPut]
-        [Route("{int:id}")]
+        [Route("{id:int}")]
         public async Task<ActionResult> Edit([FromBody] EditTenant edittenant, int id)
         {
             using var _context = new ESKOBDbContext();
