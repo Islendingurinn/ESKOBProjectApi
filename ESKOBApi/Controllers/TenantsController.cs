@@ -28,6 +28,17 @@ namespace ESKOBApi.Controllers
             }
             
         }
+        
+        [HttpGet]
+        [Route("{reference}")]
+        public ActionResult Get(string reference)
+        {
+            using var _context = new ESKOBDbContext();
+            Tenant tenant = _context.Tenants.Where(t => t.Reference == reference).FirstOrDefault();
+            if (tenant == null || reference.Equals("")) return NotFound(reference);
+
+            return Ok(tenant);
+        }
 
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] CreateTenant createtenant)

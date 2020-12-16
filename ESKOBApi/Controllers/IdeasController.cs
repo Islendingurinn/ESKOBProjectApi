@@ -73,7 +73,7 @@ namespace ESKOBApi.Controllers
         }
 
         [HttpGet]
-        [Route("{search}")]
+        [Route("{search?}")]
         public ActionResult Get(string search, string reference)
         {
             DateTime now = DateTime.Now;
@@ -83,6 +83,16 @@ namespace ESKOBApi.Controllers
             if (tenant == null) return NotFound(reference);
             int tenantId = tenant.Id;
 
+            if (search == null)
+            {
+                return Ok(_context.Ideas
+                    .Include(idea => idea.Hashtags)
+                    .Include(idea => idea.Comments)
+                    .Where(idea => !idea.Status.ToLower().Equals("deleted")
+                    && idea.TenantId == tenantId)
+                    .OrderByDescending(idea => idea.Submitted)
+                    .ToList());
+            }
 
             switch (search.ToLower())
             {
