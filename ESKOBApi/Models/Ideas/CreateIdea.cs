@@ -12,5 +12,6 @@ namespace ESKOBApi
         public string Priority { get; set; }
         public int Impact { get; set; }
         public int Effort { get; set; }
+        public string Employee { get; set; }
     }
 }

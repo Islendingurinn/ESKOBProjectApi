@@ -37,7 +37,7 @@ namespace ESKOBApi
                     builder =>
                     {
                         builder.WithOrigins("https://localhost:44371")
-                        .WithMethods("POST", "GET")
+                        .WithMethods("POST", "GET", "PUT", "DELETE")
                         .WithHeaders("*");
                     });
             });

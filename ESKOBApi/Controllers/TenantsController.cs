@@ -11,7 +11,7 @@ namespace ESKOBApi.Controllers
     {
 
         [HttpGet]
-        [Route("{id?:int}")]
+        [Route("{id:int?}")]
         public ActionResult Get(int id)
         {
             using var _context = new ESKOBDbContext();
@@ -27,6 +27,17 @@ namespace ESKOBApi.Controllers
                 return Ok(tenant);
             }
             
+        }
+        
+        [HttpGet]
+        [Route("{reference}")]
+        public ActionResult Get(string reference)
+        {
+            using var _context = new ESKOBDbContext();
+            Tenant tenant = _context.Tenants.Where(t => t.Reference == reference).FirstOrDefault();
+            if (tenant == null || reference.Equals("")) return NotFound(reference);
+
+            return Ok(tenant);
         }
 
         [HttpPost]
@@ -46,7 +57,7 @@ namespace ESKOBApi.Controllers
         }
 
         [HttpPut]
-        [Route("{int:id}")]
+        [Route("{id:int}")]
         public async Task<ActionResult> Edit([FromBody] EditTenant edittenant, int id)
         {
             using var _context = new ESKOBDbContext();
