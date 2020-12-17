@@ -2,7 +2,6 @@ using ESKOBApi.Models;
 using ESKOBApi.Models.Notifications;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using System;
 
 namespace ESKOBApi
 {
@@ -20,8 +19,6 @@ namespace ESKOBApi
         public DbSet<Idea> Ideas { get; set; }
         public DbSet<Task> Tasks { get; set; }
         public DbSet<Comment> Comments { get; set; }
-        public DbSet<Attachment> Attachments { get; set; }
-        public DbSet<Added_User> Added_Users { get; set; }
         public DbSet<Hashtag> Hashtags { get; set; }
         public DbSet<Manager> Managers { get; set; }
         public DbSet<Tenant> Tenants { get; set; }

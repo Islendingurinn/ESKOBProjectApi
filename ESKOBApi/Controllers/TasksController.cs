@@ -15,13 +15,12 @@ namespace ESKOBApi.Controllers
         public async Task<ActionResult> Create([FromBody] CreateTask createtask, string reference)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             using var _context = new ESKOBDbContext();
             Tenant tenant = _context.Tenants.Where(t => t.Reference == reference).FirstOrDefault();
-            if (tenant == null) return NotFound(reference);
+            if (tenant == null) 
+                return NotFound(reference);
 
             Models.Task task = new Models.Task
             {
@@ -30,7 +29,8 @@ namespace ESKOBApi.Controllers
                 Title = createtask.Title,
                 Description = createtask.Description,
                 Estimation = createtask.Estimation,
-                IdeaId = createtask.IdeaId
+                IdeaId = createtask.IdeaId,
+                CreatorId = createtask.CreatorId
             };
 
             await _context.Tasks.AddAsync(task);
@@ -51,12 +51,8 @@ namespace ESKOBApi.Controllers
                 .ThenInclude(c => c.Author)
                 .FirstOrDefault();
 
-            if (task == null) return NotFound(id);
-
-            if (task.Creator == null)
-            {
-                task.Creator = new Manager { Id = -1, Name = "Undefined" };
-            }
+            if (task == null) 
+                return NotFound(id);
 
             return Ok(task);
         }
@@ -67,22 +63,19 @@ namespace ESKOBApi.Controllers
         {
             using var _context = new ESKOBDbContext();
             Models.Task task = _context.Tasks.Where(i => i.Id == id).FirstOrDefault();
-            if (task == null) return NotFound(id);
+            if (task == null) 
+                return NotFound(id);
 
             String newStatus = "";
             switch (status.ToUpper())
             {
                 case "IN_PROGRESS":
                     if (task.Status.ToLower().Equals("not_started"))
-                    {
                         newStatus = status;
-                    }
                     break;
                 case "DONE":
                     if (task.Status.ToLower().Equals("in_progress"))
-                    {
                         newStatus = status;
-                    }
                     break;
                 case "DELETED":
                     newStatus = status;

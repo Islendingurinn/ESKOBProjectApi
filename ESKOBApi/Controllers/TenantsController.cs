@@ -9,24 +9,22 @@ namespace ESKOBApi.Controllers
     [Route("[controller]")]
     public class TenantsController : ControllerBase
     {
-
         [HttpGet]
         [Route("{id:int?}")]
         public ActionResult Get(int id)
         {
             using var _context = new ESKOBDbContext();
             if(id == 0)
-            {
                 return Ok(_context.Tenants.ToList());
-            }
+
             else
             {
                 Tenant tenant = _context.Tenants.Where(t => t.Id == id).FirstOrDefault();
-                if (tenant == null) return NotFound(id);
+                if (tenant == null) 
+                    return NotFound(id);
 
                 return Ok(tenant);
             }
-            
         }
         
         [HttpGet]
@@ -35,7 +33,8 @@ namespace ESKOBApi.Controllers
         {
             using var _context = new ESKOBDbContext();
             Tenant tenant = _context.Tenants.Where(t => t.Reference == reference).FirstOrDefault();
-            if (tenant == null || reference.Equals("")) return NotFound(reference);
+            if (tenant == null || reference.Equals("")) 
+                return NotFound(reference);
 
             return Ok(tenant);
         }
@@ -43,6 +42,9 @@ namespace ESKOBApi.Controllers
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] CreateTenant createtenant)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             using var _context = new ESKOBDbContext();
             Tenant tenant = new Tenant
             {
@@ -60,9 +62,13 @@ namespace ESKOBApi.Controllers
         [Route("{id:int}")]
         public async Task<ActionResult> Edit([FromBody] EditTenant edittenant, int id)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             using var _context = new ESKOBDbContext();
             Tenant tenant = _context.Tenants.Where(t => t.Id == id).FirstOrDefault();
-            if (tenant == null) return NotFound(id);
+            if (tenant == null) 
+                return NotFound(id);
 
             if(edittenant.Name != null)
                 tenant.Name = edittenant.Name;
@@ -80,7 +86,8 @@ namespace ESKOBApi.Controllers
         {
             using var _context = new ESKOBDbContext();
             Tenant tenant = _context.Tenants.Where(t => t.Id == id).FirstOrDefault();
-            if (tenant == null) return NotFound(id);
+            if (tenant == null) 
+                return NotFound(id);
 
             _context.Tenants.Remove(tenant);
             await _context.SaveChangesAsync();

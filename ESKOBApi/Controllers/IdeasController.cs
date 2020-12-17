@@ -17,13 +17,12 @@ namespace ESKOBApi.Controllers
         public async Task<ActionResult> Create([FromBody] CreateIdea createidea, string reference)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             using var _context = new ESKOBDbContext();
             Tenant tenant = _context.Tenants.Where(t => t.Reference == reference).FirstOrDefault();
-            if (tenant == null) return NotFound(reference);
+            if (tenant == null) 
+                return NotFound(reference);
 
             Idea idea = new Idea
             {
@@ -66,13 +65,12 @@ namespace ESKOBApi.Controllers
         public async Task<ActionResult> Edit([FromBody] EditIdea editidea, int id)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             using var _context = new ESKOBDbContext();
             Idea toEdit = _context.Ideas.Where(i => i.Id == id).FirstOrDefault();
-            if (toEdit == null) return NotFound(id);
+            if (toEdit == null) 
+                return NotFound(id);
 
             if (editidea.Cost_Save != null)
                 toEdit.Cost_Save = editidea.Cost_Save;
@@ -99,7 +97,9 @@ namespace ESKOBApi.Controllers
             using var _context = new ESKOBDbContext();
 
             Tenant tenant =_context.Tenants.Where(t => t.Reference == reference).FirstOrDefault();
-            if (tenant == null) return NotFound(reference);
+            if (tenant == null) 
+                return NotFound(reference);
+
             int tenantId = tenant.Id;
 
             if (search == null)
@@ -232,23 +232,8 @@ namespace ESKOBApi.Controllers
                 .ThenInclude(task => task.Creator)
                 .FirstOrDefault();
 
-            if (idea == null) return NotFound(id);
-
-            foreach(Comment c in idea.Comments)
-            {
-                if (c.Author == null)
-                {
-                    c.Author = new Manager { Id = -1, Name = "Undefined" };
-                };
-            }
-
-            foreach (Models.Task t in idea.Tasks)
-            {
-                if (t.Creator == null)
-                {
-                    t.Creator = new Manager { Id = -1, Name = "Undefined" };
-                }
-            }
+            if (idea == null) 
+                return NotFound(id);
 
             return Ok(idea);
         }
@@ -260,28 +245,23 @@ namespace ESKOBApi.Controllers
             using var _context = new ESKOBDbContext();
 
             Idea idea = _context.Ideas.Where(i => i.Id == id).FirstOrDefault();
-            if (idea == null) return NotFound(id);
+            if (idea == null) 
+                return NotFound(id);
 
             String newStatus = "";
             switch (status.ToUpper())
             {
                 case "UNDER_REVIEW":
                     if (idea.Status.ToLower().Equals("new"))
-                    {
                         newStatus = status;
-                    }
                     break;
                 case "UNDER_IMPLEMENTATION":
                     if (idea.Status.ToLower().Equals("under_review"))
-                    {
                         newStatus = status;
-                    }
                     break;
                 case "IMPLEMENTED":
                     if (idea.Status.ToLower().Equals("under_implementation"))
-                    {
                         newStatus = status;
-                    }
                     break;
                 case "DELETED":
                     newStatus = status;

@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using ESKOBApi.Models;
 using ESKOBApi.Models.Notifications;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +23,9 @@ namespace ESKOBApi.Controllers
         [Route("{id:int}/{tag}")]
         public async Task<ActionResult> Subscribe(int id, string tag)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             using var _context = new ESKOBDbContext();
             Subscription sub = new Subscription()
             {

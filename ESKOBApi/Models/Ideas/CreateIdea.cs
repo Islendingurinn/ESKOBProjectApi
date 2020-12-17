@@ -1,9 +1,4 @@
-﻿using ESKOBApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;  
-
-namespace ESKOBApi
+﻿namespace ESKOBApi
 {
     public class CreateIdea
     {

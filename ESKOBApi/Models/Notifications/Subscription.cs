@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace ESKOBApi.Models.Notifications
+﻿namespace ESKOBApi.Models.Notifications
 {
     public class Subscription
     {
