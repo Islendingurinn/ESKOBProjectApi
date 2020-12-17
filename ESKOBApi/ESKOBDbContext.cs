@@ -1,4 +1,5 @@
 using ESKOBApi.Models;
+using ESKOBApi.Models.Notifications;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using System;
@@ -24,5 +25,7 @@ namespace ESKOBApi
         public DbSet<Hashtag> Hashtags { get; set; }
         public DbSet<Manager> Managers { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Subscription> Subscriptions { get; set; }
     }
 }

@@ -47,7 +47,9 @@ namespace ESKOBApi.Controllers
             Models.Task task = _context.Tasks.Where(x => x.Id == id)
                 .Include(tasks => tasks.Idea)
                 .Include(tasks => tasks.Creator)
-                .Include(tasks => tasks.Comments).FirstOrDefault();
+                .Include(tasks => tasks.Comments)
+                .ThenInclude(c => c.Author)
+                .FirstOrDefault();
 
             if (task == null) return NotFound(id);
 

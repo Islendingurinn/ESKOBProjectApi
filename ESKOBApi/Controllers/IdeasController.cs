@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ESKOBApi.Models;
+using ESKOBApi.Models.Notifications;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,10 +35,27 @@ namespace ESKOBApi.Controllers
                 Description = createidea.Description,
                 Effort = createidea.Effort,
                 Impact = createidea.Impact,
-                Priority = createidea.Priority
+                Priority = createidea.Priority,
+                Employee = createidea.Employee
             };
-
             await _context.Ideas.AddAsync(idea);
+            await _context.SaveChangesAsync();
+
+            List<Manager> tenantManagers = _context.Managers
+                .Where(m => m.TenantId == tenant.Id).ToList();
+
+            foreach(Manager m in tenantManagers) { 
+                Notification notification = new Notification()
+                {
+                    Title = "New Idea",
+                    Description = idea.Title,
+                    Link = "ideas/idea/" + idea.Id,
+                    ManagerId = m.Id
+                };
+
+                await _context.AddAsync(notification);
+            }
+
             await _context.SaveChangesAsync();
 
             return Ok(idea);
