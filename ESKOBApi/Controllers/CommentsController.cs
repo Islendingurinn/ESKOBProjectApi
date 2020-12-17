@@ -14,18 +14,16 @@ namespace ESKOBApi.Controllers
     [Route("{reference}/[controller]")]
     public class CommentsController : ControllerBase
     {
-      
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateComment newcomment, string reference)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             using var _context = new ESKOBDbContext();
             Tenant tenant = _context.Tenants.Where(t => t.Reference == reference).FirstOrDefault();
-            if (tenant == null) return NotFound(reference);
+            if (tenant == null) 
+                return NotFound(reference);
 
             Comment comment = new Comment
             {
@@ -44,20 +42,20 @@ namespace ESKOBApi.Controllers
                 .Where(c => c.Id == comment.Id)
                 .Include(c => c.Author)
                 .FirstOrDefault();
+
             foreach(String s in comment.Body.Split(" "))
             {
-                if (!Regex.IsMatch(s, @"^@\[[a-zA-z]{2,}\]\(Manager:\d{1,}\)*")) continue;
+                if (!Regex.IsMatch(s, @"^@\[[a-zA-z]{2,}\]\(Manager:\d{1,}\)*")) 
+                    continue;
 
                 int id = Int32.Parse(s.Replace(")", "").Split(":").Last());
+                
                 string link = "";
                 if(comment.TaskId == 0)
-                {
                     link = "ideas/idea/" + comment.IdeaId;
-                }
                 else
-                {
                     link = "tasks/task/" + comment.TaskId;
-                }
+
                 Notification notif = new Notification()
                 {
                     Title = "Mention",

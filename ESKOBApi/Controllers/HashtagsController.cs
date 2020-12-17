@@ -19,7 +19,8 @@ namespace ESKOBApi.Controllers
             using var _context = new ESKOBDbContext();
 
             Tenant tenant = _context.Tenants.Where(t => t.Reference == reference).FirstOrDefault();
-            if (tenant == null) return NotFound(reference);
+            if (tenant == null) 
+                return NotFound(reference);
 
             return Ok(_context.Hashtags
                 .Where(hashtag => hashtag.Tag == tag && hashtag.TenantId == tenant.Id)
@@ -32,13 +33,12 @@ namespace ESKOBApi.Controllers
         public async Task<ActionResult> Create([FromBody] CreateHashtag createhashtag, string reference)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             using var _context = new ESKOBDbContext();
             Tenant tenant = _context.Tenants.Where(t => t.Reference == reference).FirstOrDefault();
-            if (tenant == null) return NotFound(reference);
+            if (tenant == null) 
+                return NotFound(reference);
 
             Hashtag hashtag = new Hashtag
             {
@@ -57,6 +57,7 @@ namespace ESKOBApi.Controllers
 
             List<Subscription> subs = _context.Subscriptions
                 .Where(s => s.Tag.ToLower().Equals(hashtag.Tag.ToLower())).ToList();
+
             foreach(Subscription s in subs)
             {
                 Notification notif = new Notification()

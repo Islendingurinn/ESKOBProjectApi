@@ -9,24 +9,25 @@ namespace ESKOBApi.Controllers
     [Route("{reference}/[controller]")]
     public class ManagersController : ControllerBase
     {
-
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] CreateManager createmanager, string reference)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
             
             using var _context = new ESKOBDbContext();
             Tenant tenant = _context.Tenants.Where(t => t.Reference == reference).FirstOrDefault();
-            if (tenant == null) return NotFound(reference);
+            if (tenant == null) 
+                return NotFound(reference);
 
-            //todo: password
+            string password = string.IsNullOrEmpty(createmanager.Password) ? 
+                createmanager.Name : createmanager.Password;
+
+            string hashedPassword = PasswordEncryption.Hash(password);
             Manager manager = new Manager
             {
                 Name = createmanager.Name,
-                Password = createmanager.Password,
+                Password = hashedPassword,
                 TenantId = tenant.Id
             };
 
@@ -48,20 +49,22 @@ namespace ESKOBApi.Controllers
         public async Task<ActionResult> Edit([FromBody] EditManager editmanager, int id)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             using var _context = new ESKOBDbContext();
             Manager manager = _context.Managers.Where(m => m.Id == id).FirstOrDefault();
-            if (manager == null) return NotFound(id);
+            if (manager == null) 
+                return NotFound(id);
 
             if(!string.IsNullOrEmpty(editmanager.Name))
                 manager.Name = editmanager.Name;
 
             if (!string.IsNullOrEmpty(editmanager.Password))
-                manager.Password = editmanager.Password;
-
+            {
+                string hashedPassword = PasswordEncryption.Hash(editmanager.Password);
+                manager.Password = hashedPassword;
+            }
+                
             await _context.SaveChangesAsync();
 
             DummyManager dummy = new DummyManager
@@ -80,7 +83,8 @@ namespace ESKOBApi.Controllers
         {
             using var _context = new ESKOBDbContext();
             Manager manager = _context.Managers.Where(m => m.Id == id).FirstOrDefault();
-            if (manager == null) return NotFound(id);
+            if (manager == null) 
+                return NotFound(id);
 
             _context.Managers.Remove(manager);
             await _context.SaveChangesAsync();
@@ -92,7 +96,8 @@ namespace ESKOBApi.Controllers
         {
             using var _context = new ESKOBDbContext();
             Tenant tenant = _context.Tenants.Where(t => t.Reference.Equals(reference)).FirstOrDefault();
-            if (tenant == null) return NotFound(reference);
+            if (tenant == null) 
+                return NotFound(reference);
 
             return Ok(_context.Managers
                 .Where(manager => manager.TenantId == tenant.Id)
@@ -110,8 +115,6 @@ namespace ESKOBApi.Controllers
         public ActionResult Get(int id)
         {
             using var _context = new ESKOBDbContext();
-            Tenant tenant = _context.Tenants.Where(t => t.Id == id).FirstOrDefault();
-            if (tenant == null) return NotFound(id);
 
             Manager manager = _context.Managers
                 .Where(manager => manager.Id == id)
