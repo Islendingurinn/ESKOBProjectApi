@@ -5,5 +5,6 @@
         public string Body { get; set; }
         public int IdeaId { get; set; }
         public int? TaskId { get; set; }
+        public int AuthorId { get; set; }
     }
 }
