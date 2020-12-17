@@ -4,14 +4,16 @@ using ESKOBApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ESKOBApi.Migrations
 {
     [DbContext(typeof(ESKOBDbContext))]
-    partial class ESKOBDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201216230220_AddNotification")]
+    partial class AddNotification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -232,11 +234,8 @@ namespace ESKOBApi.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Link")
+                    b.Property<string>("ManagerId")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ManagerId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
@@ -244,24 +243,6 @@ namespace ESKOBApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Notifications");
-                });
-
-            modelBuilder.Entity("ESKOBApi.Models.Notifications.Subscription", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<int>("ManagerId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Tag")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Subscriptions");
                 });
 
             modelBuilder.Entity("ESKOBApi.Models.Task", b =>

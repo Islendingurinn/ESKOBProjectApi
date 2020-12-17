@@ -56,7 +56,12 @@ namespace ESKOBApi.Controllers
             Manager manager = _context.Managers.Where(m => m.Id == id).FirstOrDefault();
             if (manager == null) return NotFound(id);
 
-            manager.Name = editmanager.Name;
+            if(!string.IsNullOrEmpty(editmanager.Name))
+                manager.Name = editmanager.Name;
+
+            if (!string.IsNullOrEmpty(editmanager.Password))
+                manager.Password = editmanager.Password;
+
             await _context.SaveChangesAsync();
 
             DummyManager dummy = new DummyManager
@@ -98,6 +103,26 @@ namespace ESKOBApi.Controllers
                     Name = manager.Name,
                     TenantId = manager.TenantId
                 }).ToList());
+        }
+
+        [HttpGet]
+        [Route("{id:int}")]
+        public ActionResult Get(int id)
+        {
+            using var _context = new ESKOBDbContext();
+            Tenant tenant = _context.Tenants.Where(t => t.Id == id).FirstOrDefault();
+            if (tenant == null) return NotFound(id);
+
+            Manager manager = _context.Managers
+                .Where(manager => manager.Id == id)
+                .FirstOrDefault();
+
+            return Ok(new DummyManager()
+            {
+                Id = manager.Id,
+                Name = manager.Name,
+                TenantId = manager.TenantId
+            });
         }
     }
 }

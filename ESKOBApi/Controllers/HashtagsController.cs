@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using ESKOBApi.Models;
+using ESKOBApi.Models.Notifications;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,7 +49,27 @@ namespace ESKOBApi.Controllers
 
             await _context.Hashtags.AddAsync(hashtag);
             await _context.SaveChangesAsync();
-            
+
+            hashtag = _context.Hashtags
+                .Where(h => h.Id == hashtag.Id)
+                .Include(h => h.Idea)
+                .FirstOrDefault();
+
+            List<Subscription> subs = _context.Subscriptions
+                .Where(s => s.Tag.ToLower().Equals(hashtag.Tag.ToLower())).ToList();
+            foreach(Subscription s in subs)
+            {
+                Notification notif = new Notification()
+                {
+                    Title = "Subscription",
+                    Description = hashtag.Idea.Title,
+                    Link = "ideas/idea/" + hashtag.IdeaId,
+                    ManagerId = s.ManagerId
+                };
+
+                await _context.AddAsync(notif);
+            }
+            await _context.SaveChangesAsync();
 
             return Ok(hashtag);
         }
